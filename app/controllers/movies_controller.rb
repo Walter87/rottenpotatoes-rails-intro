@@ -12,13 +12,16 @@ helper_method :sort_column
   end
 
   def index
-    #@movies = Movie.find(order(sort_column)
+    #@movies = Movie.find(order(sort_) ||column)
+   
     @movies = Movie.where(rating: my_ratings.keys)
     @movies.order!(sort_column)
     @all_ratings = Movie.give_ratings
-    @current_ratings = my_ratings.keys
-    
-    
+    @current_ratings = my_ratings.keys || @all_ratings
+    session[:sort] = sort_column || 'title'
+    session[:ratings] = my_ratings
+  
+   
     
     sort_column == 'title' ? @klass = 'hilite' : ''
     sort_column == "release_date" ? @klass1 = 'hilite' : ''
@@ -54,9 +57,9 @@ helper_method :sort_column
 
 private
   def sort_column
-    %w[title release_date].include?(params[:sort]) ? params[:sort] : "title"
+    %w[title release_date].include?(params[:sort]) ? params[:sort] : session[:sort]
   end
   def my_ratings
-    params[:ratings] ||= {G: '1', PG: '1', "PG-13" => '1', R: '1'}
+    params[:ratings] ||= session[:ratings]
   end
 end
